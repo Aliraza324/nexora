@@ -20,11 +20,13 @@ import BuiltForTheUncommon from "./components/BuiltForTheUncommon";
 import CraftsmanshipSection from "./components/CraftsmanshipSection";
 import CustomerReviewsSection from "./components/CustomerReviewsSection";
 import Footer from "./components/Footer";
+import Preloader from "./components/Preloader";
 import { PRODUCTS } from "./data/products";
 
 export default function App() {
   const mainRef = useRef(null);
   const clothingRailRef = useRef(null);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [activeSlide, setActiveSlide] = useState(0);
   const [cartOpen, setCartOpen] = useState(false);
@@ -35,9 +37,11 @@ export default function App() {
     },
   ]);
 
-  // Initial Page Load GSAP Choreography
+  // Initial Page Load GSAP Choreography (runs once preloader curtains open)
   useGSAP(
     () => {
+      if (!isLoaded) return;
+
       const prefersReducedMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)"
       ).matches;
@@ -128,7 +132,7 @@ export default function App() {
         "-=0.8"
       );
     },
-    { scope: mainRef }
+    { dependencies: [isLoaded], scope: mainRef }
   );
 
   const handleAddToCart = (product, size) => {
@@ -158,6 +162,9 @@ export default function App() {
       ref={mainRef}
       className="relative min-h-screen w-full flex flex-col justify-between bg-[#ECE7DE] text-[#141414] overflow-x-hidden"
     >
+      {/* Luxury Cinematic Preloader Screen */}
+      {!isLoaded && <Preloader onComplete={() => setIsLoaded(true)} />}
+
       {/* Background Subtle Typography Watermarks */}
       <BackgroundWatermarks />
 
